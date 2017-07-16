@@ -29,7 +29,7 @@ class Api::V1::PinsController < ApplicationController
           head 401
         end
       else
-        head 422
+        head 401
       end
     end
 end
