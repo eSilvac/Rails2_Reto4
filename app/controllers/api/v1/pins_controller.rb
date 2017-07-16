@@ -1,4 +1,7 @@
 class Api::V1::PinsController < ApplicationController
+  protect_from_forgery with: :null_session
+  before_action :authenticate, only: [:index, :create]
+
   def index
     render json: Pin.all.order('created_at DESC')
   end
@@ -15,5 +18,18 @@ class Api::V1::PinsController < ApplicationController
   private
     def pin_params
       params.require(:pin).permit(:title, :image_url)
+    end
+
+    def authenticate
+      user = User.find_by(email: request.headers['X-User-Email'])
+      if user
+        if user.api_token == request.headers['X-Api-Token']
+          true
+        else
+          head 401
+        end
+      else
+        head 422
+      end
     end
 end
